@@ -12,7 +12,12 @@ def main():
   #create directories
   create_directory('datas/')
   create_directory('model/')
+  create_directory('results/')
   create_directory('logs/')
+  create_directory('logs/fit')
+  create_directory('datas/images/')
+  create_directory('datas/images/train')
+  create_directory('datas/images/test')
   create_directory('datas/tmp/')
   create_directory('datas/tmp/x_image/')
   create_directory('datas/tmp/y_state/')

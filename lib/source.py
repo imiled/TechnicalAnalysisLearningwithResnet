@@ -282,14 +282,14 @@ def splitted_NN(index, nb_split, past_step,fut_step):
 		else : nb_final=(i+1)*nb_block
 
 		X_image, Y_StateClass_image, Y_FutPredict_image =launch_splitted(0+i*nb_block,(i+1)*nb_block,index)
-		X_image.to_csv('../datas/tmp/x_image/out'+str(i)+'.csv', mode='w',compression='zip')
-		Y_StateClass_image.to_csv('../datas/tmp/y_state/out'+str(i)+'.csv', mode='w',compression='zip')
-		Y_FutPredict_image.to_csv('../datas/tmp/y_forward/out'+str(i)+'.csv', mode='w',compression='zip')
+		X_image.to_csv('datas/tmp/x_image/out'+str(i)+'.zip', mode='w',compression='zip')
+		Y_StateClass_image.to_csv('datas/tmp/y_state/out'+str(i)+'.zip', mode='w',compression='zip')
+		Y_FutPredict_image.to_csv('datas/tmp/y_forward/out'+str(i)+'.zip', mode='w',compression='zip')
 		print("blabla"+str(i))
    
 	return X_image, Y_StateClass_image, Y_FutPredict_image
 
-def load_data_from_filename(path='./',filename='out0.csv'):
+def load_data_from_filename(path='./',filename='out0.zip'):
   x_image=pd.read_csv(path+'datas/tmp/x_image/'+filename)
   y_StateClass_image=pd.read_csv(path+'datas/tmp/y_state/'+filename)
   y_futurepredict_image=pd.read_csv(path+'datas/tmp/y_forward/'+filename) 
@@ -299,7 +299,7 @@ def load_data_from_filename(path='./',filename='out0.csv'):
   
   return x_image, y_StateClass_image, y_futurepredict_image
 
-def load_data_from_splitted_directory_sources(path='./', filename='out0.csv'):
+def load_data_from_splitted_directory_sources(path='./', filename='out0.zip'):
   dfList=[]
   y_StateClass_image=pd.DataFrame()
   x_image=pd.DataFrame()
@@ -342,7 +342,7 @@ def download_history(index_code='^GSPC',start_t=datetime(2000,1,1),end_t=datetim
 def write_image_in_directory(index, start_index,nb_split, past_step,fut_step):
 	x_image, y_StateClass_image, y_futurepredict_image=splitted_NN(index, nb_split=nb_split, past_step=past_step,fut_step=fut_step)
 
-def split_write_datas_for_each_state(x_image, y_StateClass_image, y_futurepredict_image,name_ref=''):
+def split_write_datas_for_each_state(x_image, y_StateClass_image, y_futurepredict_image,path="./", name_ref=''):
 	#group by y state the x_image 
 	#count the min of the of each state 
 	#construct a directory for each block like cat, dog etc
@@ -397,7 +397,7 @@ def split_write_datas_for_each_state(x_image, y_StateClass_image, y_futurepredic
 	print("dataset class 4 size is :",y_StateClass_image_4.size, "and for x ", x_image_State_is_4.index.size)
 
 	#write dataset for each set  in corresponding folder
-	def print_data_class(state=0,write_path='datas/state_is_') :
+	def print_data_class(state=0,write_path=path+'datas/dataset/state_is_') :
 	  state_zero_loc=localize_index_from_state(non_monotonic_index, state)
 	  y_StateClass_image_0 =y_StateClass_image.iloc[state_zero_loc]
 	  x_image_State_is_0 =x_image.iloc[state_zero_loc]
@@ -465,19 +465,19 @@ def read_datas_splitted(y_name='y_stateclass.csv.zip'):
     df_y=pd.concat([df_y,df_y_tmp],axis=0)
   return df_y
 
-def read_and_create_dataset_by_perc(x_name='x_image.zip', y_name='y_stateclass.csv.zip',validation_split=0.2):
+def read_and_create_dataset_by_perc(path="./", range_list=[0,1], x_name='x_image.zip', y_name='y_stateclass.zip',validation_split=0.2):
   
   df_x_train=pd.DataFrame()
   df_y_train=pd.DataFrame()
   df_x_test=pd.DataFrame()
   df_y_test=pd.DataFrame()
 
-  for filename in ['datas/state_is_'+str(j)+'/out'+str(i)+'_' for i in range(2,3) for j in range(5)]:
+  for filename in [path+'datas/dataset/state_is_'+str(j)+'/out'+str(i)+'_' for i in range_list for j in range(5)]:
     df_x_tmp=pd.read_csv(filename+x_name).set_index('Date')
     df_y_tmp=pd.read_csv(filename+y_name).set_index('Date')
     
     nb_dates=len(df_y_tmp.values)
-    print(nb_dates)
+    
     train_split, test_split=split_by_perc(nb_dates, validation_split)
 
     df_x_train=pd.concat([df_x_train,df_x_tmp.iloc[train_split]],axis=0)
@@ -485,25 +485,25 @@ def read_and_create_dataset_by_perc(x_name='x_image.zip', y_name='y_stateclass.c
     df_y_train=pd.concat([df_y_train,df_y_tmp.iloc[train_split]],axis=0)
     df_y_test=pd.concat([df_y_test,df_y_tmp.iloc[test_split]],axis=0)
 
-  df_x_train.to_csv('datas/dataset_by_perc/train/'+'x_train.zip',compression='zip')
-  df_y_train.to_csv('datas/dataset_by_perc/train/'+'y_train.zip',compression='zip')
-  df_x_test.to_csv('datas/dataset_by_perc/test/'+'x_test.zip',compression='zip')
-  df_y_test.to_csv('datas/dataset_by_perc/test/'+'y_test.zip',compression='zip')
+  df_x_train.to_csv(path+'datas/dataset/dataset_by_perc/train/'+'x_train.zip',compression='zip')
+  df_y_train.to_csv(path+'datas/dataset/dataset_by_perc/train/'+'y_train.zip',compression='zip')
+  df_x_test.to_csv(path+'datas/dataset/dataset_by_perc/test/'+'x_test.zip',compression='zip')
+  df_y_test.to_csv(path+'datas/dataset/dataset_by_perc/test/'+'y_test.zip',compression='zip')
   return df_x_train.values, df_y_train.values, df_x_test.values, df_y_test.values
 
-def read_and_create_dataset_by_number(x_name='x_image.zip', y_name='y_stateclass.csv.zip',nb_case_by_state_block=50):
+def read_and_create_dataset_by_number(path="./", range_list=[0,1],x_name='x_image.zip', y_name='y_stateclass.zip',nb_case_by_state_block=50):
   
   df_x_train=pd.DataFrame()
   df_y_train=pd.DataFrame()
   df_x_test=pd.DataFrame()
   df_y_test=pd.DataFrame()
 
-  for filename in ['datas/state_is_'+str(j)+'/out'+str(i)+'_' for i in range(2,3) for j in range(5)]:
+  for filename in [path+'datas/dataset/state_is_'+str(j)+'/out'+str(i)+'_' for i in range_list for j in range(5)]:
     df_x_tmp=pd.read_csv(filename+x_name).set_index('Date')
     df_y_tmp=pd.read_csv(filename+y_name).set_index('Date')
     
     nb_dates=len(df_y_tmp.values)
-    print(nb_dates)
+    #print(nb_dates)
     train_split, test_split=split_by_number(nb_dates, nb_case_by_state_block)
 
     df_x_train=pd.concat([df_x_train,df_x_tmp.iloc[train_split]],axis=0)
@@ -511,10 +511,10 @@ def read_and_create_dataset_by_number(x_name='x_image.zip', y_name='y_stateclass
     df_y_train=pd.concat([df_y_train,df_y_tmp.iloc[train_split]],axis=0)
     df_y_test=pd.concat([df_y_test,df_y_tmp.iloc[test_split]],axis=0)
 
-  df_x_train.to_csv('datas/dataset_by_number/train/'+'x_train.zip',compression='zip')
-  df_y_train.to_csv('datas/dataset_by_number/train/'+'y_train.zip',compression='zip')
-  df_x_test.to_csv('datas/dataset_by_number/test/'+'x_test.zip',compression='zip')
-  df_y_test.to_csv('datas/dataset_by_number/test/'+'y_test.zip',compression='zip')
+  df_x_train.to_csv(path+'datas/dataset/dataset_by_number/train/'+'x_train.zip',compression='zip')
+  df_y_train.to_csv(path+'datas/dataset/dataset_by_number/train/'+'y_train.zip',compression='zip')
+  df_x_test.to_csv(path+'datas/dataset/dataset_by_number/test/'+'x_test.zip',compression='zip')
+  df_y_test.to_csv(path+'datas/dataset/dataset_by_number/test/'+'y_test.zip',compression='zip')
   return df_x_train.values, df_y_train.values, df_x_test.values, df_y_test.values
 
 def read_dataset_by_path(path='datas/dataset_by_number'):
