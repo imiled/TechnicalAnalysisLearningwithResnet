@@ -7,13 +7,13 @@ The objective is first to get a complete dataset, then a trained model based on 
 
 In addition we analyse the model efficiency and last point for any image of a stock price historical graph we have a tool that tell us if we would rather buy, sell or hold.
 
-You can find also in the docs/ repertory the TFM report and presentation with the google colab notebook. 
-
 I consider here a problem of behaviour finance as most investor look throughly at those graph more than fondamental numbers and those graph can be interpretated on small horizon (minutes) or long (years) to get an estimation of its evolution. The humain will process this information deeply and the consequence of this process is the behaviour of stock market. Benjamin Graham in the "Intelligent Investor" - written in 1949 and considered as the bible of value investing - introduce the allegory of Mr. Market, meant to personify the irrationality and group-think of the stock market. As of august 2020, the value of some stocks are higher than the economy of France and Germany and some companies (Tesla) are bought at a price quite difficult to apprehend in terms of valuation fondamental and comparison to established company in Europe (Volkswagen) or Japan (Toyota). That is true, that our brain is set to always find an explanation but in this approach we' ll try to apprehend the impact of price evolution to make Mr Market more greedy or fearful.
 
 In this project I have chosen to present 4 steps which can be taken separately as we can load save datas or models. 
 
-I worked on it in google colab you can see it in the following file :
+You can find more details in the ./docs/ repertory the TFM report and presentation. 
+
+I worked on it in google colab you can see it in the following file (also in ./docs/) :
 
 TechAnalysisLearningwithResnet.ipynb [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/imiled/MarketPredictionusingResnetandStockTechGraph/blob/main/docs/TechAnalysisLearningwithResnet.ipynb)
 
