@@ -18,12 +18,24 @@ I worked on it in google colab you can see it in the following file :
 
 Transfert_Learning_Vgg16forSP500.ipynb [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/imiled/DL_Tools_For_Finance/blob/master/Transfert_Learning_Vgg16forSP500.ipynb)
 
+I recommend at start to use a virtual python envirenment using this specific command :
+```
+$ bash init.sh
+```
 
-But it can be launched in local also using the command to get the specific packages :
+But it can be launched in local also using the command to get the specific packages  :
+
+if using a cpu :
 ```
 pip install -r cpu_requirement.txt
 ```
-or using this Docker command to get the appropiate environment:
+
+for a gpu :
+```
+pip install -r gpu_requirement.txt
+```
+
+and using this Docker command to get the appropiate environment:
 ```
 docker pull imiled/sp500from_image_to_state_prediction:1.0
 ```
