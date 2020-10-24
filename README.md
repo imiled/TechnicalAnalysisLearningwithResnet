@@ -24,19 +24,19 @@ $ bash init.sh
 
 and using this Docker command to get the appropiate environment base:
 ```
-docker pull imiled/sp500from_image_to_state_prediction:1.0
+$ docker pull imiled/sp500from_image_to_state_prediction:1.0
 ```
 
 But it can be launched in local also using the command to get the specific packages either for a cpu or a gpu :
 
 for cpu :
 ```
-pip install -r cpu_requirement.txt
+$ pip install -r cpu_requirements.txt
 ```
 
 for a gpu :
 ```
-pip install -r gpu_requirement.txt
+$ pip install -r gpu_requirements.txt
 ```
 
 
