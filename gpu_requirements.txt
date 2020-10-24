@@ -10,6 +10,7 @@ scikit-learn
 scikit-image
 scipy
 pandas_datareader
+opencv-python
 
 #for data recuperation from website
 yfinance
