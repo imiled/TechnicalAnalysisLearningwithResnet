@@ -23,9 +23,14 @@ I recommend at start to use a virtual python envirenment using this specific com
 $ bash init.sh
 ```
 
-But it can be launched in local also using the command to get the specific packages  :
+and using this Docker command to get the appropiate environment base:
+```
+docker pull imiled/sp500from_image_to_state_prediction:1.0
+```
 
-if using a cpu :
+But it can be launched in local also using the command to get the specific packages either for a cpu or a gpu :
+
+for cpu :
 ```
 pip install -r cpu_requirement.txt
 ```
@@ -35,10 +40,6 @@ for a gpu :
 pip install -r gpu_requirement.txt
 ```
 
-and using this Docker command to get the appropiate environment:
-```
-docker pull imiled/sp500from_image_to_state_prediction:1.0
-```
 
 Now for each step can be taken independently as we are saving loading datas and model at each time.
 
