@@ -1,6 +1,5 @@
-# Market Prediction using Resnet and a dataset of Stock graph
 # TFM Introduction Deep Learning Tools For Finance 
-## Application : Automated Technical analysis using Resnet Neural Network
+## Application : Automated Financial Technical analysis using Resnet Neural Network
 
 I focused in this project to apply a Transfert learning methodology of CNN to an image of the sp500 technical graph as an image. 
 
