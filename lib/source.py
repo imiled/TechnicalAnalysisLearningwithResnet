@@ -31,10 +31,35 @@ def get_img_from_fig(fig, dpi=180):
     img_arr = np.frombuffer(buf.getvalue(), dtype=np.uint8)
     buf.close()
     img = cv2.imdecode(img_arr, 1)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    dim = (255, 255)
+    # resize image
+    resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+    return resized
 
-    return img
+def build_image_optimfig(fig, stockindex, idate=10, pastlag=10, futlag=3):
+  '''
+  #version of returning image from a data frame index
+  #using the pastlag as range for the graph
+  #ising idate as a starting point
+  #return a (32,32,3) np array
+  #this one is optimisng the use of ram 
+  '''
 
+  #number of days to consider for translate
+  sp500close=stockindex
+  x_datas=[]
+  x_datas=np.zeros((255,255))
+  i=idate
+  
+  plt.plot(sp500close[(i-pastlag):i])
+  plot_img_np = get_img_from_fig(fig)
+  
+  #x_tmp= skimage.measure.block_reduce(plot_img_np[90:620,140:970], (2,3,1), np.mean)
+  #(x_datas[:])[:,:][:]=(x_tmp[5:-5])[:,11:-11][:]
+    
+  x_datas=plot_img_np/255
+  return x_datas
 '''
 MAIN FUNCTION OF CLASSIFICATION 
 build y state y fut 
@@ -119,16 +144,7 @@ def build_image_df(xdf, past_step,fut_step) :
 
   fig=plt.figure()
   
-  '''
-  for i in range(len(df_stockvaluecorrected.index)):
-        try:
-          tmpimage=build_image_optimfig(fig, df_stockvaluecorrected,i,pastlag=past_step,futlag=fut_step)
-          np_x_image[i,:]=np.reshape(tmpimage,(1,-1))
-          print("loop 2 image :", "step ",i,"market state fut", df_market_state.iloc[i]," future value",df_Fut_value.iloc[i] )
-        except:
-           print("error at index", i)
-  '''           
-  
+ 
   def build_image_optimfig_simplified(i_index):
     return build_image_optimfig(fig, df_stockvaluecorrected,i_index,pastlag=past_step,futlag=fut_step)
 
@@ -195,29 +211,7 @@ def change_X_df__nparray_image(df_X_train_image_flattened ):
     x_train[i]=tmp
   return x_train
 
-def build_image_optimfig(fig, stockindex, idate=10, pastlag=10, futlag=3):
-  '''
-  #version of returning image from a data frame index
-  #using the pastlag as range for the graph
-  #ising idate as a starting point
-  #return a (32,32,3) np array
-  #this one is optimisng the use of ram 
-  '''
 
-  #number of days to consider for translate
-  sp500close=stockindex
-  x_datas=[]
-  x_datas=np.zeros((255,255,3))
-  i=idate
-  
-  plt.plot(sp500close[(i-pastlag):i])
-  plot_img_np = get_img_from_fig(fig)
-  #x_tmp= skimage.measure.block_reduce(plot_img_np[90:620,140:970], (18,28,1), np.mean)
-  x_tmp= skimage.measure.block_reduce(plot_img_np[90:620,140:970], (2,3,1), np.mean)
-  (x_datas[:])[:,:][:]=(x_tmp[5:-5])[:,11:-11][:]
-    
-  x_datas=x_datas[:,:,0]/255
-  return x_datas
 
 def setup_input_NN_image(xdf, past_step=25,fut_step=5, split=0.8, is_shuffle=False):
   '''
@@ -540,3 +534,4 @@ def line_to_image255(x_train):
     tmp=tmp.reshape(255,255,1)
     x_train_image[i]=tmp
   return x_train_image
+
