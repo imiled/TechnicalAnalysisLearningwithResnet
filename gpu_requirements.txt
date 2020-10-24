@@ -1,0 +1,24 @@
+#MLDL
+tensorflow==2.3.0
+Keras==2.3.1
+
+
+#data 
+pandas
+numpy
+scikit-learn
+scikit-image
+scipy
+pandas_datareader
+
+#for data recuperation from website
+yfinance
+
+
+# For applications handling images in Cloud ML Engine
+#Pillow
+
+# Testing
+#pytest
+#pytest-cov
+#mock
