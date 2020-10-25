@@ -280,7 +280,7 @@ def splitted_NN(index, nb_split, past_step,fut_step):
 		X_image.to_csv('datas/tmp/x_image/out'+str(i)+'.zip', mode='w',compression='zip')
 		Y_StateClass_image.to_csv('datas/tmp/y_state/out'+str(i)+'.zip', mode='w',compression='zip')
 		Y_FutPredict_image.to_csv('datas/tmp/y_forward/out'+str(i)+'.zip', mode='w',compression='zip')
-		print("blabla"+str(i))
+		print("end loop 2 for block "+str(i)+"the daframes have been created in tmp repertory")
    
 	return X_image, Y_StateClass_image, Y_FutPredict_image
 
