@@ -134,7 +134,7 @@ def build_image_df(xdf, past_step,fut_step) :
   for i in range(len(df_stockvaluecorrected.index)):
         yfut=df_Fut_value.iloc[i]
         df_market_state.iloc[i]=class_shortterm_returnfut(df_stockvaluecorrected,yfut, i,tpastlag=past_step)
-        print("loop 1 market state :", "step ",i,"market state fut", df_market_state.iloc[i]," future value",df_Fut_value.iloc[i] )
+        print("loop 1 ", "step ",i," future ", df_market_state.iloc[i]," future value",df_Fut_value.iloc[i] )
   df_market_state.index=df_Fut_value.index
 
   fig=plt.figure()
