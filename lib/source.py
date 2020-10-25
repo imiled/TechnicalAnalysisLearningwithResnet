@@ -31,35 +31,30 @@ def get_img_from_fig(fig, dpi=180):
     img_arr = np.frombuffer(buf.getvalue(), dtype=np.uint8)
     buf.close()
     img = cv2.imdecode(img_arr, 1)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    dim = (255, 255)
-    # resize image
-    resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-    return resized
+    return img
 
 def build_image_optimfig(fig, stockindex, idate=10, pastlag=10, futlag=3):
   '''
   #version of returning image from a data frame index
   #using the pastlag as range for the graph
   #ising idate as a starting point
-  #return a (32,32,3) np array
+  #return a (255,255) np array
   #this one is optimisng the use of ram 
   '''
 
   #number of days to consider for translate
   sp500close=stockindex
-  x_datas=[]
-  x_datas=np.zeros((255,255))
   i=idate
   
   plt.plot(sp500close[(i-pastlag):i])
   plot_img_np = get_img_from_fig(fig)
   
-  #x_tmp= skimage.measure.block_reduce(plot_img_np[90:620,140:970], (2,3,1), np.mean)
-  #(x_datas[:])[:,:][:]=(x_tmp[5:-5])[:,11:-11][:]
-    
-  x_datas=plot_img_np/255
-  return x_datas
+  img = cv2.cvtColor(plot_img_np[150:560,350:760], cv2.COLOR_BGR2GRAY)
+  dim = (255, 255)
+  # resize image
+  resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+  return resized/255
+  
 '''
 MAIN FUNCTION OF CLASSIFICATION 
 build y state y fut 
@@ -277,10 +272,10 @@ def splitted_NN(index, nb_split, past_step,fut_step):
 		else : nb_final=(i+1)*nb_block
 
 		X_image, Y_StateClass_image, Y_FutPredict_image =launch_splitted(0+i*nb_block,(i+1)*nb_block,index)
-		X_image.to_csv('datas/tmp/x_image/out'+str(i)+'.zip', mode='w',compression='zip')
-		Y_StateClass_image.to_csv('datas/tmp/y_state/out'+str(i)+'.zip', mode='w',compression='zip')
-		Y_FutPredict_image.to_csv('datas/tmp/y_forward/out'+str(i)+'.zip', mode='w',compression='zip')
-		print("blabla"+str(i))
+		X_image.to_csv('datas/tmp/x_image/out'+str(i)+'.csv', mode='w')
+		Y_StateClass_image.to_csv('datas/tmp/y_state/out'+str(i)+'.csv', mode='w')
+		Y_FutPredict_image.to_csv('datas/tmp/y_forward/out'+str(i)+'.csv', mode='w')
+		print("end loop 2 for block "+str(i))
    
 	return X_image, Y_StateClass_image, Y_FutPredict_image
 
@@ -359,6 +354,8 @@ def split_write_datas_for_each_state(x_image, y_StateClass_image, y_futurepredic
 	except :
 	  print("No value for error state")
 
+
+	'''
 	state_zero_loc=localize_index_from_state(non_monotonic_index, 0)
 	state_one_loc=localize_index_from_state(non_monotonic_index, 1)
 	state_two_loc=localize_index_from_state(non_monotonic_index, 2)
@@ -390,18 +387,22 @@ def split_write_datas_for_each_state(x_image, y_StateClass_image, y_futurepredic
 	print("dataset class 2 size is :",y_StateClass_image_2.size, "and for x ", x_image_State_is_2.index.size)
 	print("dataset class 3 size is :",y_StateClass_image_3.size, "and for x ", x_image_State_is_3.index.size)
 	print("dataset class 4 size is :",y_StateClass_image_4.size, "and for x ", x_image_State_is_4.index.size)
+  '''
 
 	#write dataset for each set  in corresponding folder
 	def print_data_class(state=0,write_path=path+'datas/dataset/state_is_') :
-	  state_zero_loc=localize_index_from_state(non_monotonic_index, state)
-	  y_StateClass_image_0 =y_StateClass_image.iloc[state_zero_loc]
-	  x_image_State_is_0 =x_image.iloc[state_zero_loc]
-	  y_futpredict_image_0 =y_futurepredict_image.iloc[state_zero_loc]
-	  y_StateClass_image_0.to_csv(write_path+str(state)+'/'+name_ref+'y_stateclass.zip',compression='zip')
-	  x_image_State_is_0.to_csv(write_path+str(state)+'/'+name_ref+'x_image.zip',compression='zip')
-	  y_futpredict_image_0.to_csv(write_path+str(state)+'/'+name_ref+'y_future.zip',compression='zip')
+	  try: 
+	    state_zero_loc=localize_index_from_state(non_monotonic_index, state)
+	    y_StateClass_image_0 =y_StateClass_image.iloc[state_zero_loc]
+	    x_image_State_is_0 =x_image.iloc[state_zero_loc]
+	    y_futpredict_image_0 =y_futurepredict_image.iloc[state_zero_loc]
+	    y_StateClass_image_0.to_csv(write_path+str(state)+'/'+name_ref+'y_stateclass.csv')
+	    x_image_State_is_0.to_csv(write_path+str(state)+'/'+name_ref+'x_image.csv')
+	    y_futpredict_image_0.to_csv(write_path+str(state)+'/'+name_ref+'y_future.csv')
+	    print("dataset class ",state," size is : ",y_StateClass_image_0.size, " and for x ",x_image_State_is_0.index.size)
+	  except:
+	    print("No value for state "+str(state))
 
-	
 	print_data_class(state=0)
 	print_data_class(state=1)
 	print_data_class(state=2)
@@ -451,7 +452,7 @@ def split_by_number(nb_dates, case_number_for_validation):
   Y_train_StateClass=(Y_StateClass.iloc[train_split])
   Y_train_FutPredict=(Y_FutPredict.iloc[train_split])
 
-def read_datas_splitted(y_name='y_stateclass.csv.zip'):
+def read_datas_splitted(y_name='y_stateclass.zip'):
   dfList=[]
   df_x=pd.DataFrame()
   df_y=pd.DataFrame()
@@ -480,10 +481,10 @@ def read_and_create_dataset_by_perc(path="./", range_list=[0,1], x_name='x_image
     df_y_train=pd.concat([df_y_train,df_y_tmp.iloc[train_split]],axis=0)
     df_y_test=pd.concat([df_y_test,df_y_tmp.iloc[test_split]],axis=0)
 
-  df_x_train.to_csv(path+'datas/dataset/dataset_by_perc/train/'+'x_train.zip',compression='zip')
-  df_y_train.to_csv(path+'datas/dataset/dataset_by_perc/train/'+'y_train.zip',compression='zip')
-  df_x_test.to_csv(path+'datas/dataset/dataset_by_perc/test/'+'x_test.zip',compression='zip')
-  df_y_test.to_csv(path+'datas/dataset/dataset_by_perc/test/'+'y_test.zip',compression='zip')
+  df_x_train.to_csv(path+'datas/dataset/dataset_by_perc/train/'+'x_train.csv')
+  df_y_train.to_csv(path+'datas/dataset/dataset_by_perc/train/'+'y_train.csv')
+  df_x_test.to_csv(path+'datas/dataset/dataset_by_perc/test/'+'x_test.csv')
+  df_y_test.to_csv(path+'datas/dataset/dataset_by_perc/test/'+'y_test.csv')
   return df_x_train.values, df_y_train.values, df_x_test.values, df_y_test.values
 
 def read_and_create_dataset_by_number(path="./", range_list=[0,1],x_name='x_image.zip', y_name='y_stateclass.zip',nb_case_by_state_block=50):
@@ -506,22 +507,23 @@ def read_and_create_dataset_by_number(path="./", range_list=[0,1],x_name='x_imag
     df_y_train=pd.concat([df_y_train,df_y_tmp.iloc[train_split]],axis=0)
     df_y_test=pd.concat([df_y_test,df_y_tmp.iloc[test_split]],axis=0)
 
-  df_x_train.to_csv(path+'datas/dataset/dataset_by_number/train/'+'x_train.zip',compression='zip')
-  df_y_train.to_csv(path+'datas/dataset/dataset_by_number/train/'+'y_train.zip',compression='zip')
-  df_x_test.to_csv(path+'datas/dataset/dataset_by_number/test/'+'x_test.zip',compression='zip')
-  df_y_test.to_csv(path+'datas/dataset/dataset_by_number/test/'+'y_test.zip',compression='zip')
+  df_x_train.to_csv(path+'datas/dataset/dataset_by_number/train/'+'x_train.csv')
+  df_y_train.to_csv(path+'datas/dataset/dataset_by_number/train/'+'y_train.csv')
+  df_x_test.to_csv(path+'datas/dataset/dataset_by_number/test/'+'x_test.csv')
+  df_y_test.to_csv(path+'datas/dataset/dataset_by_number/test/'+'y_test.csv')
   return df_x_train.values, df_y_train.values, df_x_test.values, df_y_test.values
 
 def read_dataset_by_path(path='datas/dataset_by_number'):
-    x_train=(pd.read_csv(path+'/train/x_train.zip').set_index('Date')).values
-    x_test=(pd.read_csv(path+'/test/x_test.zip').set_index('Date')).values
-    y_train=(pd.read_csv(path+'/train/y_train.zip').set_index('Date')).values
-    y_test=(pd.read_csv(path+'/test/y_test.zip').set_index('Date')).values  
+    x_train=(pd.read_csv(path+'/train/x_train.csv').set_index('Date')).values
+    x_test=(pd.read_csv(path+'/test/x_test.csv').set_index('Date')).values
+    y_train=(pd.read_csv(path+'/train/y_train.csv').set_index('Date')).values
+    y_test=(pd.read_csv(path+'/test/y_test.csv').set_index('Date')).values  
     return x_train, y_train, x_test, y_test
 
 def plot_example_image(x_train_image):
   fig2 = plt.figure(figsize=(10, 6))
-  x_datas=x_train_image[np.random.randint(low=10,high=1000,size=8)]
+  nb_case=x_train_image.shape[0]
+  x_datas=x_train_image[np.random.randint(low=10,high=nb_case,size=8)]
   for i in range(0,8):
     img = x_datas[i][:][:]
     fig2.add_subplot(2, 4, i+1)
