@@ -116,7 +116,7 @@ def build_image_df(xdf, past_step,fut_step) :
   '''
 
   df_stockvaluecorrected=xdf
-  df_stockvaluecorrected, _ = normalise_df_image(df_stockvaluecorrected)
+  #df_stockvaluecorrected, _ = normalise_df_image(df_stockvaluecorrected)
   df_pctchge = df_stockvaluecorrected.pct_change(periods=past_step)
   df_movave = df_stockvaluecorrected.rolling(window=past_step).mean()
   df_volaty = np.sqrt(252)*df_pctchge.rolling(window=past_step).std()
@@ -152,12 +152,13 @@ def build_image_df(xdf, past_step,fut_step) :
         if (indexstart==index_end):
             tmpimage=build_image_optimfig_simplified(indexstart)
             np_x_image[indexstart,:]=np.reshape(tmpimage,(1,-1))
-            print("loop 2 image :", "step ",indexstart)
+            
         else :
             i_split=indexstart+(index_end-indexstart)//2
             quick_build_image_from_index(indexstart, i_split,np_x_image)
             quick_build_image_from_index(i_split+1, index_end,np_x_image)
-
+  
+  print("start loop 2 : write all graph of stock evolution from this block to a dataFrame")
   quick_build_image_from_index(0, len(df_stockvaluecorrected.index)-1, np_x_image)
 
   df_x_image=pd.DataFrame(data=np_x_image,columns=colname_d_x_image_flattened, index=df_stockvaluecorrected.index)
