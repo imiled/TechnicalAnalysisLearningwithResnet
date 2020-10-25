@@ -32,14 +32,14 @@ def main():
   for i in range(nb_image_to_write) :
     img = x_train_image[i][:][:]
     plt.imshow(img[:,:,0])
-    fig1.savefig(path_train+'state_'+statetostring(y_train[i])+'_image_'+str(i)+'.PNG', dpi=1000)
+    fig1.savefig(path_train+'state_'+statetostring(y_train[i])+'_image_'+str(i)+'.PNG', dpi=100)
     print("saving image"+'state_'+statetostring(y_train[i])+'_image_'+str(i)+" in "+path_train)
   
   nb_image_to_write=np.minimum(x_test.shape[0],max_image_number)
   for i in range(nb_image_to_write) :
     img = x_test_image[i][:][:]
     plt.imshow(img[:,:,0])
-    fig1.savefig(path_test+'state_'+statetostring(y_test[i])+'_image_'+str(i)+'.PNG', dpi=1000)
+    fig1.savefig(path_test+'state_'+statetostring(y_test[i])+'_image_'+str(i)+'.PNG', dpi=100)
     print("saving image"+'state_'+statetostring(y_test[i])+'_image_'+str(i)+" in "+path_test)
 
 if __name__ == "__main__":
