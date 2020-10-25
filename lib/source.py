@@ -49,7 +49,7 @@ def build_image_optimfig(fig, stockindex, idate=10, pastlag=10, futlag=3):
   plt.plot(sp500close[(i-pastlag):i])
   plot_img_np = get_img_from_fig(fig)
   
-  img = cv2.cvtColor(plot_img_np[150:560,350:760], cv2.COLOR_BGR2GRAY)
+  img = cv2.cvtColor(plot_img_np, cv2.COLOR_BGR2GRAY)
   dim = (255, 255)
   # resize image
   resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
@@ -138,7 +138,7 @@ def build_image_df(xdf, past_step,fut_step) :
   df_market_state.index=df_Fut_value.index
 
   fig=plt.figure()
-  
+  plt.axis('off')
  
   def build_image_optimfig_simplified(i_index):
     return build_image_optimfig(fig, df_stockvaluecorrected,i_index,pastlag=past_step,futlag=fut_step)
@@ -354,40 +354,6 @@ def split_write_datas_for_each_state(x_image, y_StateClass_image, y_futurepredic
 	except :
 	  print("No value for error state")
 
-
-	'''
-	state_zero_loc=localize_index_from_state(non_monotonic_index, 0)
-	state_one_loc=localize_index_from_state(non_monotonic_index, 1)
-	state_two_loc=localize_index_from_state(non_monotonic_index, 2)
-	state_three_loc=localize_index_from_state(non_monotonic_index, 3)
-	state_four_loc=localize_index_from_state(non_monotonic_index, 4)
-
-	#Build up class for the dataset
-	y_StateClass_image_0 =y_StateClass_image.iloc[state_zero_loc]
-	y_StateClass_image_1 =y_StateClass_image.iloc[state_one_loc]
-	y_StateClass_image_2 =y_StateClass_image.iloc[state_two_loc]
-	y_StateClass_image_3 =y_StateClass_image.iloc[state_three_loc]
-	y_StateClass_image_4 =y_StateClass_image.iloc[state_four_loc]
-
-	x_image_State_is_0 =x_image.iloc[state_zero_loc]
-	x_image_State_is_1 =x_image.iloc[state_one_loc]
-	x_image_State_is_2 =x_image.iloc[state_two_loc]
-	x_image_State_is_3 =x_image.iloc[state_three_loc]
-	x_image_State_is_4 =x_image.iloc[state_four_loc]
-
-	y_futpredict_image_0 =y_futurepredict_image.iloc[state_zero_loc]
-	y_futpredict_image_1 =y_futurepredict_image.iloc[state_one_loc]
-	y_futpredict_image_2 =y_futurepredict_image.iloc[state_two_loc]
-	y_futpredict_image_3 =y_futurepredict_image.iloc[state_three_loc]
-	y_futpredict_image_4 =y_futurepredict_image.iloc[state_four_loc]
-
-	#print size of each dataset
-	print("dataset class 0 size is :",y_StateClass_image_0.size, "and for x ", x_image_State_is_0.index.size)
-	print("dataset class 1 size is :",y_StateClass_image_1.size, "and for x ", x_image_State_is_1.index.size)
-	print("dataset class 2 size is :",y_StateClass_image_2.size, "and for x ", x_image_State_is_2.index.size)
-	print("dataset class 3 size is :",y_StateClass_image_3.size, "and for x ", x_image_State_is_3.index.size)
-	print("dataset class 4 size is :",y_StateClass_image_4.size, "and for x ", x_image_State_is_4.index.size)
-  '''
 
 	#write dataset for each set  in corresponding folder
 	def print_data_class(state=0,write_path=path+'datas/dataset/state_is_') :
