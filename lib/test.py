@@ -39,7 +39,7 @@ def main():
   y_pred = np.argmax(Y_pred, axis=1)
   y= np.argmax(m_y_test,axis=1)
 
-  target_state = ['SS', 'SN', 'N','NB','BB']
+  target_state = ['SS', 'SN', 'N','NB','BB','ER']
 
   def statetostring(x):
     return target_state[int(x)]
