@@ -14,6 +14,9 @@ def main():
     input_model_path = input ("Enter path for models : ")
     input_model_name = input ("Enter input model name : ")
     ouput_model_name = input ("Enter trained model name: ")
+    input_loss= input ("Enter loss type for model: ")
+    input_optimizer_name= input ("Enter optimizer type: ")
+    input_metrics=[input ("Enter metrics to optimize: ")]
     input_nb_class = input("Enter number of classes ")
     input_batch_size = input ("Enter batch size: ")
     input_epochs = input ("Enter epochs number : ")
@@ -24,9 +27,9 @@ def main():
     input_model_path=param[1]
     input_model_name=param[2]
     ouput_model_name=param[3]
-    sp500loss=param[4]
-    sp500optimizer_name=param[5]
-    sp500metrics=[param[6]]
+    input_loss=param[4]
+    input_optimizer_name=param[5]
+    input_metrics=[param[6]]
     input_nb_class = int(param[7])
     input_batch_size = int(param[8])
     input_epochs = int(param[9])
@@ -34,7 +37,7 @@ def main():
   
   sp500optimizer=sp500optimizer_name
   
-  print(input_model_path+"best_model"+"_Batch"+str(input_batch_size)+"_LR"+str(input_learning_rate)+".hdf5")
+  #print(input_model_path+"best_model"+"_Batch"+str(input_batch_size)+"_LR"+str(input_learning_rate)+".hdf5")
   transfer_model_in_learning=load_model(input_model_path+input_model_name)
   x_train, y_train, _, _ =read_dataset_by_path(path=input_dataset_path) 
   
@@ -50,20 +53,20 @@ def main():
                                   monitor='loss', verbose=1, \
                                   save_best_only=True, mode='auto', period=1)
   # Define the Keras TensorBoard callback.
-  #logdir=input_model_path+"../logs/fit/" + datetime.now().strftime("%Y%m%d-%H%M%S")
-  #tensorboard_callback = TensorBoard(log_dir=logdir, histogram_freq=1)
+  logdir=input_model_path+"../logs/fit/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+  tensorboard_callback = TensorBoard(log_dir=logdir, histogram_freq=1)
 
   #Save initial weight to reinitialize it after when we trying to find the best set of parameters
   #transfer_model.save_weights('model/initial_weights.h5')
   #model.load_weights('my_model_weights.h5')
   
   ###compilation model
-  transfer_model_in_learning.compile(loss=sp500loss, optimizer=sp500optimizer, metrics=sp500metrics)
+  transfer_model_in_learning.compile(loss=input_loss, optimizer=input_optimizer, metrics=input_metrics)
   
   history = transfer_model_in_learning.fit(m_x_train, m_y_train, \
                                 batch_size=input_batch_size, epochs=input_epochs, \
-                                validation_split=0.2, verbose=1, shuffle=True) \
-   #                             ,callbacks=[checkpoint, tensorboard_callback])
+                                validation_split=0.2, verbose=1, shuffle=True \
+                                ,callbacks=[checkpoint, tensorboard_callback])
 
   # Saving themodel
   transfer_model_in_learning.save(input_model_path+ouput_model_name+'.h5')
