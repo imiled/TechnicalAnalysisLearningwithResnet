@@ -15,7 +15,7 @@ You can find more details in the ./docs/ repertory the TFM report and presentati
 
 I worked on it in google colab you can see it in the following file (also in ./docs/) :
 
-TechAnalysisLearningwithResnet.ipynb [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/imiled/MarketPredictionusingResnetandStockTechGraph/blob/main/docs/TechAnalysisLearningwithResnet.ipynb)
+TechAnalysisLearningwithResnet.ipynb [![Open In Colab](https://colab.research.google.com/github/imiled/TechnicalAnalysisLearningwithResnet/blob/main/TechnicalAnalysisLearningwithResnet.ipynb#scrollTo=DDX3dN5zO3dS)
 
 I recommend at start to use a virtual python envirenment using this specific command :
 ```
