@@ -418,11 +418,11 @@ def split_by_number(nb_dates, case_number_for_validation):
   Y_train_StateClass=(Y_StateClass.iloc[train_split])
   Y_train_FutPredict=(Y_FutPredict.iloc[train_split])
 
-def read_datas_splitted(y_name='y_stateclass.zip'):
+def read_datas_splitted(y_name='y_stateclass.zip',st=0,ed=1):
   dfList=[]
   df_x=pd.DataFrame()
   df_y=pd.DataFrame()
-  for filename in ['datas/state_is_'+str(j)+'/out'+str(i)+'_' for i in range(2,3) for j in range(5)]:
+  for filename in ['datas/state_is_'+str(j)+'/out'+str(i)+'_' for i in range(st,ed) for j in range(5)]:
     df_y_tmp=pd.read_csv(filename+y_name).set_index('Date')
     df_y=pd.concat([df_y,df_y_tmp],axis=0)
   return df_y
