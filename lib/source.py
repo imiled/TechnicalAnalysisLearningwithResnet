@@ -156,7 +156,9 @@ def build_image_only(xdf, past_step,fut_step,im_path) :
 	  
 	  plot_img_np = get_img_from_fig(fig)
 	  img = cv2.cvtColor(plot_img_np, cv2.COLOR_BGR2GRAY)
-	  fig.savefig(im_path+'datas/images/state_'+state+'_image_'+str(indexstart)+'.PNG', dpi=100)
+	  str_date_indexstart=str((df_stockvaluecorrected.index[indexstart]))
+
+	  fig.savefig(im_path+'state_'+state+'_image_date'+str_date_indexstart+'.PNG', dpi=100)
 	  # resize image
 	  resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
 	  tmpimage=resized/255
