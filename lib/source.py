@@ -10,6 +10,7 @@ import os
 import cv2
 import skimage
 import os.path as path
+import pathlib
 from pandas_datareader import data as pdr
 from skimage import measure
 from skimage.measure import block_reduce
@@ -220,6 +221,7 @@ def build_image_df(xdf, past_step,fut_step) :
   fig=plt.figure()
   plt.axis('off')
   
+  im_path=str(pathlib.Path().absolute())+'/images/'
   for indexstart in range(len(df_stockvaluecorrected.index)):
 	  fig.clear()
 	  plt.axis('off')
@@ -231,7 +233,9 @@ def build_image_df(xdf, past_step,fut_step) :
 	  
 	  plot_img_np = get_img_from_fig(fig)
 	  img = cv2.cvtColor(plot_img_np, cv2.COLOR_BGR2GRAY)
-	  fig.savefig('datas/images/state_'+state+'_image_'+str(indexstart)+'.PNG', dpi=100)
+	  str_date_indexstart=str((df_stockvaluecorrected.index[indexstart]))
+
+	  fig.savefig(im_path+'state_'+state+'_image_date'+str_date_indexstart+'.PNG', dpi=100)
 	  # resize image
 	  resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
 	  tmpimage=resized/255
@@ -239,9 +243,8 @@ def build_image_df(xdf, past_step,fut_step) :
 	  np_x_image[indexstart,:]=np.reshape(tmpimage,(1,-1))  
 
 	  
-	  
   df_x_image=pd.DataFrame(data=np_x_image,columns=colname_d_x_image_flattened, index=df_stockvaluecorrected.index)
-  fig.clear
+  fig.clear()
   plt.close(fig)
 
 
