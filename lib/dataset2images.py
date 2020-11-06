@@ -1,7 +1,7 @@
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
-from source import read_dataset_by_path, line_to_image255
+from source import read_dataset_by_path, line_to_image255, statetostring
 
 def main():
   param=sys.argv[1:]
@@ -22,9 +22,6 @@ def main():
   path_train=output_path_image+'train/'
   path_test=output_path_image+'test/'
 
-  target_state = ['SS', 'SN', 'N','NB','BB','ER']
-  def statetostring(x):
-    return target_state[int(x)]
   
   fig1 = plt.figure()
   

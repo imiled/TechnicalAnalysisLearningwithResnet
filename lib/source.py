@@ -10,8 +10,6 @@ import os
 import cv2
 import skimage
 import os.path as path
-import pylab as plt
-from PIL import Image
 from pandas_datareader import data as pdr
 from skimage import measure
 from skimage.measure import block_reduce
@@ -90,6 +88,83 @@ def normalise_df_image(xdf):
   df_tmp=df_tmp/maxval
   return df_tmp, maxval
 
+def statetostring(x):
+	  target_state = ['SS', 'SN', 'N','NB','BB','ER']
+	  return target_state[int(x)]
+
+def build_image_only(xdf, past_step,fut_step,im_path) :
+  '''
+  returning a dictionary of time series dataframes to be used in setup_input_NN_image so a to generate 
+  Input X Result Y_StateClass, Y_FutPredict
+  pastlag as range for the graph
+  fut _step the future value lag in time to predict or to check the financial state of the market 
+  #times series to get information from the stock index value
+  'stock_value':the time serie of the index normalised on the whole period
+  'moving_average':  time serie of the rolling moving average value of the index for past step image
+  "max": time serie of the rolling max  value of the index for past step image
+  "min": time serie of the rolling  min value of the index for past step image
+  'volatility':  time serie of the rolling  vol value of the index for past step image
+          
+  'df_x_image': is a time series of flattened (1, ) calculed from images (32, 32, 3) list 
+  #I had to flatten it because panda does not create table with this format
+  'market_state': future markket state to be predicted time lag is futlag
+  'future_value': future value of stock price to predict  time lag is futlag
+  'future_volatility':  time serie of the future volatility of the index time lag is futlag
+  '''
+
+  df_stockvaluecorrected=xdf
+  #df_stockvaluecorrected, _ = normalise_df_image(df_stockvaluecorrected)
+  df_pctchge = df_stockvaluecorrected.pct_change(periods=past_step)
+  df_movave = df_stockvaluecorrected.rolling(window=past_step).mean()
+  df_volaty = np.sqrt(252)*df_pctchge.rolling(window=past_step).std()
+  df_max =df_stockvaluecorrected.rolling(window=past_step).max()
+  df_min =df_stockvaluecorrected.rolling(window=past_step).min()
+  df_Fut_value =df_stockvaluecorrected.shift(periods=-fut_step)
+  df_Fut_value.name='future_value'
+  df_Fut_volaty =df_volaty.shift(periods=-fut_step)
+  
+  df_market_state=pd.DataFrame(index=df_stockvaluecorrected.index,columns=['market_state'],dtype=np.float64)
+  
+  tmpimage=np.zeros((255,255))
+  flatten_image=np.reshape(tmpimage,(1,-1))
+  colname_d_x_image_flattened = ['Image Col'+str(j) for j in range(flatten_image.shape[1])]
+
+  #write frile in drive instead of RAMmemory
+  filename = path.join(mkdtemp(), 'np_x_image.dat')
+  np_x_image=np.memmap(filename,  dtype='float32', mode='w+', shape=(len(df_stockvaluecorrected.index),flatten_image.shape[1]))
+  
+  for i in range(len(df_stockvaluecorrected.index)):
+        yfut=df_Fut_value.iloc[i]
+        df_market_state.iloc[i]=class_shortterm_returnfut(df_stockvaluecorrected,yfut, i,tpastlag=past_step)
+        print("loop 1 ", "step ",i," future ", df_market_state.iloc[i]," future value",df_Fut_value.iloc[i] )
+  df_market_state.index=df_Fut_value.index
+
+
+  dim = (255, 255)
+  print("start loop 2 : write all graph of stock evolution from this block to a dataFrame")
+  fig=plt.figure()
+  plt.axis('off')
+  
+  for indexstart in range(len(df_stockvaluecorrected.index)):
+	  fig.clear()
+	  plt.axis('off')
+	  plt.plot(df_stockvaluecorrected[(indexstart-past_step):indexstart])
+	  state=statetostring(df_market_state.iloc[indexstart])
+	  print("loop 2: ", indexstart-past_step, " start ",df_stockvaluecorrected[(indexstart-past_step)], " end",indexstart," :", df_stockvaluecorrected[(indexstart)])
+	  print("y Fut: ", df_Fut_value.iloc[indexstart], " market State: ",df_market_state.iloc[indexstart], " ",state)
+	  print(df_stockvaluecorrected[(indexstart-past_step):indexstart])
+	  
+	  plot_img_np = get_img_from_fig(fig)
+	  img = cv2.cvtColor(plot_img_np, cv2.COLOR_BGR2GRAY)
+	  fig.savefig(im_path+'datas/images/state_'+state+'_image_'+str(indexstart)+'.PNG', dpi=100)
+	  # resize image
+	  resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+	  tmpimage=resized/255
+	  #tmpimage=build_image_optimfig(fig, df_stockvaluecorrected,indexstart,pastlag=past_step,futlag=fut_step)
+	  np_x_image[indexstart,:]=np.reshape(tmpimage,(1,-1))  
+  fig.clear()
+  plt.close(fig)
+	  
 def build_image_df(xdf, past_step,fut_step) :
   '''
   returning a dictionary of time series dataframes to be used in setup_input_NN_image so a to generate 
@@ -137,25 +212,32 @@ def build_image_df(xdf, past_step,fut_step) :
         print("loop 1 ", "step ",i," future ", df_market_state.iloc[i]," future value",df_Fut_value.iloc[i] )
   df_market_state.index=df_Fut_value.index
 
+
+  dim = (255, 255)
+  print("start loop 2 : write all graph of stock evolution from this block to a dataFrame")
   fig=plt.figure()
   plt.axis('off')
- 
-  def build_image_optimfig_simplified(i_index):
-    return build_image_optimfig(fig, df_stockvaluecorrected,i_index,pastlag=past_step,futlag=fut_step)
-
-  def quick_build_image_from_index(indexstart, index_end, np_x_image):
-        if (indexstart==index_end):
-            tmpimage=build_image_optimfig_simplified(indexstart)
-            np_x_image[indexstart,:]=np.reshape(tmpimage,(1,-1))
-            
-        else :
-            i_split=indexstart+(index_end-indexstart)//2
-            quick_build_image_from_index(indexstart, i_split,np_x_image)
-            quick_build_image_from_index(i_split+1, index_end,np_x_image)
   
-  print("start loop 2 : write all graph of stock evolution from this block to a dataFrame")
-  quick_build_image_from_index(0, len(df_stockvaluecorrected.index)-1, np_x_image)
+  for indexstart in range(len(df_stockvaluecorrected.index)):
+	  fig.clear()
+	  plt.axis('off')
+	  plt.plot(df_stockvaluecorrected[(indexstart-past_step):indexstart])
+	  state=statetostring(df_market_state.iloc[indexstart])
+	  print("loop 2: ", indexstart-past_step, " start ",df_stockvaluecorrected[(indexstart-past_step)], " end",indexstart," :", df_stockvaluecorrected[(indexstart)])
+	  print("y Fut: ", df_Fut_value.iloc[indexstart], " market State: ",df_market_state.iloc[indexstart], " ",state)
+	  print(df_stockvaluecorrected[(indexstart-past_step):indexstart])
+	  
+	  plot_img_np = get_img_from_fig(fig)
+	  img = cv2.cvtColor(plot_img_np, cv2.COLOR_BGR2GRAY)
+	  fig.savefig('datas/images/state_'+state+'_image_'+str(indexstart)+'.PNG', dpi=100)
+	  # resize image
+	  resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+	  tmpimage=resized/255
+	  #tmpimage=build_image_optimfig(fig, df_stockvaluecorrected,indexstart,pastlag=past_step,futlag=fut_step)
+	  np_x_image[indexstart,:]=np.reshape(tmpimage,(1,-1))  
 
+	  
+	  
   df_x_image=pd.DataFrame(data=np_x_image,columns=colname_d_x_image_flattened, index=df_stockvaluecorrected.index)
   fig.clear
   plt.close(fig)
@@ -177,20 +259,6 @@ def build_image_df(xdf, past_step,fut_step) :
 
   return df_data
 
-def change_X_df__nparray_image(df_X_train_image_flattened ):
-  '''
-  setup_input_NN_image returns a dataframe of flaten image for x train and xtest
-  then this function will change each date into a nparray list of images with 32, 32, 3 size 
-  '''
-  X_train_image=df_X_train_image_flattened
-  nb_train=len(X_train_image.index)
-  
-  x_train=np.zeros((nb_train,255,255,1))
-  for i in range(nb_train):
-    tmp=np.array(X_train_image.iloc[i])
-    tmp=tmp.reshape(255,255,1)
-    x_train[i]=tmp
-  return x_train
   
 def change_X_df__nparray_image(df_X_train_image_flattened ):
   '''
@@ -379,21 +447,6 @@ def split_write_datas_for_each_state(x_image, y_StateClass_image, y_futurepredic
 '''
 UTILITY FUNCTIONS
 '''
-
-def change_X_df__nparray_image(df_X_train_image_flattened ):
-  '''
-  setup_input_NN_image returns a dataframe of flaten image for x train and xtest
-  then this function will change each date into a nparray list of images with 32, 32, 3 size 
-  '''
-  X_train_image=df_X_train_image_flattened
-  nb_train=len(X_train_image.index)
-  
-  x_train=np.zeros((nb_train,255,255,1))
-  for i in range(nb_train):
-    tmp=np.array(X_train_image.iloc[i])
-    tmp=tmp.reshape(255,255,1)
-    x_train[i]=tmp
-  return x_train
 
 def split_by_perc(nb_dates, validation_split=0.2):
   split_index=int(validation_split*nb_dates)

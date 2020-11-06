@@ -4,6 +4,7 @@ from datetime import datetime
 from source import write_image_in_directory 
 from source import download_history
 from source import create_directory
+from source import build_image_only
 
 def main():
   
@@ -43,6 +44,8 @@ def main():
     nb_split_text = input ("Enter number of split to avoid ram pb: ")
     past_step_text = input ("Enter past nb of days for the image: ")
     fut_step_text = input ("Enter future nb of days market state to predict: ")
+    image_path = input ("Enter path for images : ")
+    
   else :
     index_text=param[0]
     start_text=param[1]
@@ -50,13 +53,16 @@ def main():
     nb_split_text=param[3]
     past_step_text=param[4]
     fut_step_text=param[5]
+    image_path=param[6]
 
   start = datetime(int(start_text),1,1)
   end = datetime(int(end_text),12,31)
 
   testsp500=download_history(index_code=str(index_text), start_t=start,end_t=end)
-  write_image_in_directory(index=testsp500,start_index=0,nb_split=int(nb_split_text), \
-      past_step=int(past_step_text),fut_step=int(fut_step_text))
+  build_image_only(testsp500,past_step=int(past_step_text),fut_step=int(fut_step_text), im_path=image_path)
+	
+  #write_image_in_directory(index=testsp500,start_index=0,nb_split=int(nb_split_text), \
+   #   past_step=int(past_step_text),fut_step=int(fut_step_text))
   
 if __name__ == "__main__":
     main()
