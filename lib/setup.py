@@ -66,7 +66,7 @@ def main():
     write_image_in_directory(index=testsp500,start_index=0,nb_split=int(nb_split_text), 
       past_step=int(past_step_text),fut_step=int(fut_step_text))
   else:    
-    build_image_only(testsp500,past_step=int(past_step_text),fut_step=int(fut_step_text))
+    build_image_only(testsp500,past_step=int(past_step_text),fut_step=int(fut_step_text),im_path=image_path)
   
  
 if __name__ == "__main__":
