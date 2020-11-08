@@ -1,14 +1,36 @@
 import datetime
 import sys
 import numpy as np
+import tensorflow as tf
 from datetime import datetime
 from source import read_dataset_by_path, line_to_image255
 from keras.utils import np_utils
+
 from tensorflow.keras.models import load_model
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from tensorflow.keras.optimizers import Adam, SGD, RMSprop,Adadelta,Adagrad,Adamax,Nadam,Ftrl
 
-
+def select_optimiser(opt_name='adam',LR=0.01):
+  if (opt_name=='adam'):
+    return Adam(learning_rate=LR)
+  elif (opt_name=='sgd'):
+    return SGD(learning_rate=LR)
+  elif (opt_name=='rmsprop'):
+    return RMSprop(learning_rate=LR)
+  elif (opt_name=='adadelta'):
+    return Adadelta(learning_rate=LR)
+  elif (opt_name=='adagrad'):
+    return Adagrad(learning_rate=LR)
+  elif (opt_name=='adamax'):
+    return Adamax(learning_rate=LR)
+  elif (opt_name=='nadam'):
+    return Nadam(learning_rate=LR)
+  elif (opt_name=='ftrl'):
+    return Ftrl(learning_rate=LR)  
+  else :
+    corrected_name=input("check the optimiser name between: adam sgd rmsprop adadelta adagrad adamax nadam ftrl")
+    return select_optimiser(opt_name=corrected_name,LR=0.01) 
+  
 def train_with_dataset(m_x_train=1 ,m_y_train=1,    \
     input_model_path='/content/TechnicalAnalysisLearningwithResnet/model/', \
     input_model_name="modelin", \
@@ -16,9 +38,9 @@ def train_with_dataset(m_x_train=1 ,m_y_train=1,    \
     input_loss='categorical_crossentropy',\
     input_optimizer_name='Adam',\
     input_metrics_name='accuracy',\
-    input_nb_class = 6,\
-    input_batch_size = 64,\
-    input_epochs = 100,\
+    input_nb_class = 5,\
+    input_batch_size = 32,\
+    input_epochs = 20,\
     input_learning_rate = 0.01):
  
   optimizer=input_optimizer_name
@@ -78,26 +100,66 @@ def main():
     input_epochs = int(param[9])
     input_learning_rate = float(param[10])
   
-  optimizer=input_optimizer_name
+
+  batch_size = input_batch_size
+  img_height = 255
+  img_width = 255
+
+  optimizer= select_optimiser(opt_name=input_optimizer_name,LR=input_learning_rate)
   input_metrics=[input_metrics_name]
+  input_loss=tf.losses.SparseCategoricalCrossentropy(from_logits=True)
+
   #print(input_model_path+"best_model"+"_Batch"+str(input_batch_size)+"_LR"+str(input_learning_rate)+".hdf5")
   transfer_model_in_learning=load_model(input_model_path+input_model_name)
-  x_train, y_train, _, _ =read_dataset_by_path(path=input_dataset_path) 
   
   #Param adjust 
-  x_train_image=line_to_image255(x_train)
+  dataset=tf.keras.preprocessing.image_dataset_from_directory(
+      directory=input_dataset_path,
+      labels="inferred",
+      label_mode="categorical",
+      class_names=None,
+      color_mode="grayscale",
+      batch_size=input_batch_size,
+      image_size=(255, 255),
+      shuffle=True,
+      seed=None,
+      validation_split=None,
+      subset=None,
+      interpolation="bilinear",
+      follow_links=False,
+  )
 
-  m_x_train=x_train_image
-  m_y_train=np_utils.to_categorical(y_train, input_nb_class)
-
+  train_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    directory='/content/TechnicalAnalysisLearningwithResnet/images',
+    color_mode='grayscale',
+    validation_split=0.2,
+    subset="training",
+    seed=123,
+    image_size=(img_height, img_width),
+    batch_size=batch_size)
+  
+  val_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    directory='/content/TechnicalAnalysisLearningwithResnet/images',
+    color_mode='grayscale',
+    validation_split=0.2,
+    subset="validation",
+    seed=123,
+    image_size=(img_height, img_width),
+    batch_size=batch_size)
+ 
+  class_names = train_ds.class_names
+  print(class_names)
+  
   ##Saving the best model for each parameters
 
   checkpoint = ModelCheckpoint(input_model_path+"best_model"+"_Batch"+str(input_batch_size)+"_LR"+str(input_learning_rate)+".hdf5", \
                                   monitor='loss', verbose=1, \
-                                  save_best_only=True, mode='auto', period=1)
+                                  save_best_only=True, mode='auto')
   # Define the Keras TensorBoard callback.
   logdir=input_model_path+"../logs/fit/" + datetime.now().strftime("%Y%m%d-%H%M%S")
   tensorboard_callback = TensorBoard(log_dir=logdir, histogram_freq=1)
+
+  transfer_model_in_learning=tf.keras.models.load_model(input_model_path+input_model_name)
 
   #Save initial weight to reinitialize it after when we trying to find the best set of parameters
   #transfer_model.save_weights('model/initial_weights.h5')
@@ -106,10 +168,7 @@ def main():
   ###compilation model
   transfer_model_in_learning.compile(loss=input_loss, optimizer=optimizer, metrics=input_metrics)
   
-  history = transfer_model_in_learning.fit(m_x_train, m_y_train, \
-                                batch_size=input_batch_size, epochs=input_epochs, \
-                                validation_split=0.2, verbose=1, shuffle=True \
-                                ,callbacks=[checkpoint, tensorboard_callback])
+  history = transfer_model_in_learning.fit(train_ds,  validation_data=val_ds, callbacks=[checkpoint, tensorboard_callback])
 
   # Saving themodel
   transfer_model_in_learning.save(input_model_path+ouput_model_name+'.h5')

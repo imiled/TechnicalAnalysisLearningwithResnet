@@ -146,7 +146,7 @@ def build_image_only(xdf, past_step,fut_step,im_path) :
   fig=plt.figure()
   plt.axis('off')
   
-  for indexstart in range(len(df_stockvaluecorrected.index)):
+  for indexstart in range(past_step,len(df_stockvaluecorrected.index),1):
 	  fig.clear()
 	  plt.axis('off')
 	  plt.plot(df_stockvaluecorrected[(indexstart-past_step):indexstart])

@@ -9,7 +9,7 @@ from datetime import datetime
 from tensorflow import keras
 from keras.utils import np_utils
 from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras import optimizers
+from tensorflow.keras import optimizers, layers
 from tensorflow.keras.layers import Input, Dense, Flatten, Conv2D, MaxPooling2D
 from tensorflow.keras.layers import Dropout, GlobalAveragePooling2D
 from tensorflow.keras.optimizers import Adam
@@ -43,30 +43,64 @@ def main():
   sp500optimizer='Adam'
   sp500metrics=['accuracy']                                           
 
-  #Loading the resnet50 model with pre-trained ImageNet weights
+  #Loading the resnet50 model 
   resnet_model = ResNet50(weights=None, include_top=False, input_shape=img_shape)
   resnet_model.trainable = True # remove if you want to retrain resnet weights
 
   ##Transfert model from resnet
-  transfer_model1 = Sequential()
-  transfer_model1.add(resnet_model)
-  transfer_model1.add(Flatten())
-  transfer_model1.add(Dense(128, activation='relu'))
-  transfer_model1.add(Dropout(0.2))
-  transfer_model1.add(Dense(input_nb_class, activation='softmax'))
+  transfer_model1 = tf.keras.Sequential([
+      Input(shape=img_shape),
+      layers.experimental.preprocessing.Rescaling(1./255),
+      resnet_model,
+      layers.Flatten(),
+      layers.Dense(128, activation='relu'),
+      layers.Dense(input_nb_class)
+      ])
+
+  #simple model
+  simplemodel = tf.keras.Sequential([
+    Input(shape=img_shape),
+    layers.experimental.preprocessing.Rescaling(1./255),
+    layers.Conv2D(128, 3, activation='relu'),
+    layers.MaxPooling2D(),
+    layers.Conv2D(128, 3, activation='relu'),
+    layers.MaxPooling2D(),
+    layers.Conv2D(128, 3, activation='relu'),
+    layers.MaxPooling2D(),
+    layers.Flatten(),
+    layers.Dense(128, activation='relu'),
+    layers.Dense(input_nb_class)
+  ])
+
+  #Loading the VGG model
+  vgg_model = VGG16(weights=None, include_top=False, input_shape=img_shape)
+  vgg_model.trainable = True # remove if you want to retrain resnet weights
+
+  #VGG model
+  transfer_model2 = tf.keras.Sequential([
+      Input(shape=img_shape),
+      layers.experimental.preprocessing.Rescaling(1./255),
+      vgg_model,
+      layers.Flatten(),
+      layers.Dense(128, activation='relu'),
+      layers.Dense(input_nb_class)
+      ])
 
   ###compilation model
-  transfer_model=transfer_model1
-  transfer_model.compile(loss=sp500loss, optimizer=sp500optimizer, metrics=sp500metrics)
-
+  transfer_model1.compile(loss=sp500loss, optimizer=sp500optimizer, metrics=sp500metrics)
+  transfer_model2.compile(loss=sp500loss, optimizer=sp500optimizer, metrics=sp500metrics)
+  simplemodel.compile(loss=sp500loss, optimizer=sp500optimizer, metrics=sp500metrics)
+  
   # Saving themodel
-  transfer_model.save(input_path+input_model_name+'.h5')
+  transfer_model1.save(input_path+'TL_resnet_init.h5')
+  transfer_model2.save(input_path+'TL_vgg_init.h5')
+  simplemodel.save(input_path+'simplemodel_init.h5')
 
   #Display the graph of the model
-  tf.keras.utils.plot_model(transfer_model)
+  tf.keras.utils.plot_model(transfer_model1)
 
   ##Display summary of neural network
-  transfer_model.summary()
+  transfer_model1.summary()
     
 if __name__ == "__main__":
   main()
