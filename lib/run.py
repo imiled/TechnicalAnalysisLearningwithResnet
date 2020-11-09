@@ -27,11 +27,12 @@ def main():
   
   for file_name in os.listdir(input_path_image): 
       if file_name.split(".")[-1].lower() in {"jpeg", "jpg", "png"}: 
+        
         img = cv2.imread(input_path_image + file_name) 
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-        image=img/255
-        print("Resizing to (255, 255) and putting in grey: ",file_name)
+        image=img
+        #print("Resizing to (255, 255) and putting in grey: ",file_name)
         l_image_input_NN.append(image)
         l_file.append(file_name)
 
@@ -39,7 +40,7 @@ def main():
   Y_pred = trainedmodel.predict(np.array(l_image_input_NN))
   y_pred = np.argmax(Y_pred, axis=1)
 
-  target_state = ['SS', 'SN', 'N','NB','BB',"ER"]
+  target_state = ['BB','NB','NN','SN','SS']
   df_result=pd.DataFrame(Y_pred)
 
   df_result.columns=target_state
