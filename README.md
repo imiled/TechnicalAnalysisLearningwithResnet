@@ -44,32 +44,30 @@ Now for each step can be taken independently as we are saving loading datas and 
 
 ## Generate Dataset of the Image and the Future maket state
 ```
-python3 step1_generate_dataset_IndexImage.py
+python3 lib/setup.py
 ```
 
 In this part we are generating the training and testing dataset.
 First we download the historical prices of the sp500 from 1927 to 31 July 2020 and built the image of 15 days historical graph also we get the 5 days future price evolution of the sp500. 
-From the future price evolution, we calculate a future state which can be splitted in 6 classes :
+From the future price evolution, we calculate a future state which can be splitted in 5 classes : ( an addtional ER ie error class is cleaned therafter)
 
-**Sell-Sell | Sell- Neutral | Neutral | Neutral -Buy | Buy -Buy |  Error**
+**Sell-Sell | Sell- Neutral | Neutral | Neutral -Buy | Buy -Buy **
+**SS | SN | NN | NB | BB **
 
-The objective is to get the following files which represent a dataframe in the data/ repertory:
-
-*X_train_image.csv , X_test_image.csv* a 3072 column time serie dataframe  of the image (32 x 32 x3) of the sp500 closing price 
-
-*Y_test_StateClass.csv, Y_train_StateClass.csv* a 1 column time serie dataframe of the future state value betwwen -1 to 4
-
-We generate also the following files but we won´t use it in this project - more for RNN & price prediction - *Y_test_FutPredict.csv Y_train_FutPredict.csv*
-
-the testing and training time serie dataset are shuffled by the date of reference with a split number of 0.8
+The objective is to get a list of images represnting the graph of the index during the past day for eache date where the class of the image would be the evolution of the index in the next future days:
+![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
 
 Please note that: 
-1. We can increase the dataset taking into account the evolution very liquid stocks or other indices as long as we have very high the liquidity and number of participants 
-2. The calculation of the dataset can take more than 6 hours of calulation as the code is not optimized so far, we can quickly implement parallel computing and rapid image setup instead of using matplotlib library
+1. I use cv2 and matplot lib to create the image in 255 x 255 x 1 for grayscale
+2. I optimsed the creation of the dataset using drive memory and not ram ( that would take all ram available and crash the system).
 
-## Loading training datas and Build up of the VGGsp500 model and train
+You can use the following commands to arrange the full images created in 2 dataset (training and testing) and for each class I randomly put the same number of images. Depending on the total number of images (min of class created) . For testing I have chosen 40 images per block. 
 ```
-python3 step2_loadingtrainingdatas_vgg_transfert_modelandtraining.py
+
+```
+## Create models 
+```
+python3 lib/createmodel.py 
 ```
 
 This part is for loading the training dataset as it is better to generate it once for all in step 1 because of it time consuming process.
@@ -83,16 +81,23 @@ We train and save the model, please refer to XX to see the convergence of the mo
 We have 14.7M parameters and 66k trainable parametres. the size of training input is 571M only for the image not including rolling volatility, moving average etc
 In the Colab notebook you can see the tensorboard document so as to monitor the convergence of the training. 
 
-## Evaluate the VGGsp500
+## Train 
 ```
-python3 step3_evaluate_vggsp500_model.py
+python3 lib/train.py
 ```
 This part will evaluate the model with the testing dataset that we generated in first step.
 We show the accuracy, the confusion matrix and the classification report 
 
-## Guess future market state from random image
+## Test 
 ```
-python3 step4_guess_future_marketstate_from_image.py
+python3 lib/test.py
+```
+This part will evaluate the model with the testing dataset that we generated in first step.
+We show the accuracy, the confusion matrix and the classification report 
+
+## Run : Guess future market state from random image
+```
+python3 lib/run.py
 ```
 
 Take an image of an historical graph from a market webpage like investing.com, crop the image to only fit the graph and save it to the ImageM/ folder for example with name image1.PNG or give the full path of the image when asked.
