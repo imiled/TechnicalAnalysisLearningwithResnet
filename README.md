@@ -42,7 +42,7 @@ $ pip install -r gpu_requirements.txt
 
 Now for each step can be taken independently as we are saving loading datas and model at each time.
 
-## Generate Dataset of the Image and the Future maket state
+## Setup : Generate Dataset 
 ```
 python3 lib/setup.py
 ```
