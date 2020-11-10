@@ -56,7 +56,10 @@ From the future price evolution, we calculate a future state which can be splitt
 **SS | SN | NN | NB | BB **
 
 The objective is to get a list of images represnting the graph of the index during the past day for eache date where the class of the image would be the evolution of the index in the next future days:
+
+
 ![alt text](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/blob/main/images%20TFM%201PNG.PNG)
+
 
 Please note that: 
 1. I use cv2 and matplot lib to create the image in 255 x 255 x 1 for grayscale
@@ -70,9 +73,6 @@ $ bash lib/organisedataset.sh
 ```
 
 
-```
-
-```
 ## Create 3 models based on 5 classes classification and 255 x 255 x 1 image input
 ```
 python3 lib/createmodel.py pathmodelfolder modelname numberofclass imageheightsize imagewidthsize imagedepth
