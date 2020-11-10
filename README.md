@@ -52,6 +52,7 @@ First we download the historical prices of the sp500 from 1927 to 31 July 2020 a
 From the future price evolution, we calculate a future state which can be splitted in 5 classes : ( an addtional ER ie error class is cleaned therafter)
 
 **Sell-Sell | Sell- Neutral | Neutral | Neutral -Buy | Buy -Buy **
+
 **SS | SN | NN | NB | BB **
 
 The objective is to get a list of images represnting the graph of the index during the past day for eache date where the class of the image would be the evolution of the index in the next future days:
@@ -61,46 +62,76 @@ Please note that:
 1. I use cv2 and matplot lib to create the image in 255 x 255 x 1 for grayscale
 2. I optimsed the creation of the dataset using drive memory and not ram ( that would take all ram available and crash the system).
 
-You can use the following commands to arrange the full images created in 2 dataset (training and testing) and for each class I randomly put the same number of images. Depending on the total number of images (min of class created) . For testing I have chosen 40 images per block. 
+You can use the commands from *organisedataset.sh* to arrange the full images created in 2 dataset (training and testing) and for each class I randomly put the same number of images. Depending on the total number of images (min of class created) . For testing I have chosen 40 images per block so 200 images in total.
+
+
+```
+$ bash lib/organisedataset.sh
+```
+
+
 ```
 
 ```
-## Create models 
+## Create 3 models based on 5 classes classification and 255 x 255 x 1 image input
 ```
-python3 lib/createmodel.py 
+python3 lib/createmodel.py pathmodelfolder modelname numberofclass imageheightsize imagewidthsize imagedepth
+```
+example
+```
+python3 /TechnicalAnalysisLearningwithResnet/lib/createmodel.py /TechnicalAnalysisLearningwithResnet/model/ init 5 255 255 1 
 ```
 
-This part is for loading the training dataset as it is better to generate it once for all in step 1 because of it time consuming process.
-This part also configure back the X_train datas from dataframe based on columns to a (32,32,3) np. array for the input of the model 
+return 3 models based on resnet, vgg and a personalized one
 
-Then we apply the Transfert model methodology with vgg16 and some other layers.
-We use for this example a categorical_crossentropy loss and rmsprop optimizer.
-This part can be fined tuned for each financial index or stock index (layers, optimizer, metrics, dropout) but in this case we introduced a simplier case.
-We train and save the model, please refer to XX to see the convergence of the model.
-
-We have 14.7M parameters and 66k trainable parametres. the size of training input is 571M only for the image not including rolling volatility, moving average etc
-In the Colab notebook you can see the tensorboard document so as to monitor the convergence of the training. 
-
-## Train 
+## Train the model based on the dataset for training
 ```
-python3 lib/train.py
+python3 lib/train.py folderpathwithcategorizedfolderimages pathformodel nameofmodelinput nameoftrainedmodeloutput loss optimizer metric nbofclasses batchsize nbofepochs learningrate
 ```
+
+example
+
+```
+python3 /TechnicalAnalysisLearningwithResnet/lib/train.py /TechnicalAnalysisLearningwithResnet/images/imagestrain/ \
+                      /content/TechnicalAnalysisLearningwithResnet/model/ \
+                      simplemodel_init.h5 \
+                      simplemodel_trained \
+                      'categorical_crossentropy' 'adam' 'accuracy' 5 32 20 0.01 \
+```
+
+This part will train the NN and save the trained model in the correct path. but t forst step it load the dataset for training split it in 2 for validation and arrange it to a 255 x 255 x 1 format with greyscale 
+
+You can refer to the colab notebook so as to find the different setup tested to get to our accepable trained model through SGD on resnet.
+
+## Test : generating the confusion matrix on dataset spared for testing
+```
+python3 lib/test.py pathforimagetotest fullpathofthemodel pathfortheresulttobesaved
+```
+
+example
+
+```
+python3 lib/test.py /content/TechnicalAnalysisLearningwithResnet/images/imagestest/ \
+  /content/TechnicalAnalysisLearningwithResnet/model/TL_resnet_trained4.h5 \
+  /content/TechnicalAnalysisLearningwithResnet/results/ 5
+```  
+
 This part will evaluate the model with the testing dataset that we generated in first step.
-We show the accuracy, the confusion matrix and the classification report 
-
-## Test 
-```
-python3 lib/test.py
-```
-This part will evaluate the model with the testing dataset that we generated in first step.
-We show the accuracy, the confusion matrix and the classification report 
+We show the accuracy, the confusion matrix and the classification report in the folder pathfortheresulttobesaved 
 
 ## Run : Guess future market state from random image
 ```
-python3 lib/run.py
+python3 lib/run.py pathforimagetopredit pathofthemodel pathfortheresults
 ```
 
-Take an image of an historical graph from a market webpage like investing.com, crop the image to only fit the graph and save it to the ImageM/ folder for example with name image1.PNG or give the full path of the image when asked.
+example
 
-This execution tell us which market state in the future is the best representative.
+```
+!python3 lib/run.py /content/TechnicalAnalysisLearningwithResnet/images/imagestrain/NN/ \
+  /content/TechnicalAnalysisLearningwithResnet/model/TL_resnet_trained4.h5 \
+  /content/TechnicalAnalysisLearningwithResnet/results/
+```
+
+Take an image of an historical graph from a market webpage like investing.com, crop the image to only fit the graph and save it to a folder for example with name image1.PNG or give the full path of the image when asked.
+This execution tell us which market state in the future is the best representative in the file found in the resultpath with name result_run_on_images%Y%m%d-%H%M%S.csv
 
