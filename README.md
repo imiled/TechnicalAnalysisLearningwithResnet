@@ -127,7 +127,7 @@ python3 lib/run.py pathforimagetopredit pathofthemodel pathfortheresults
 example
 
 ```
-!python3 lib/run.py /content/TechnicalAnalysisLearningwithResnet/images/imagestrain/NN/ \
+python3 lib/run.py /content/TechnicalAnalysisLearningwithResnet/images/imagestrain/NN/ \
   /content/TechnicalAnalysisLearningwithResnet/model/TL_resnet_trained4.h5 \
   /content/TechnicalAnalysisLearningwithResnet/results/
 ```
