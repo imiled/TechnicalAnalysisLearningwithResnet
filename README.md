@@ -13,7 +13,7 @@ In this project I have chosen to present 4 steps which can be taken separately a
 
 You can find more details in the ./docs/ repertory the TFM report and presentation. 
 
-I worked on it in google colab you can see it in the following file (also in ./docs/) :
+I worked on it in google colab you can see it in the following file  :
 
 TechAnalysisLearningwithResnet.ipynb [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/blob/main/TechnicalAnalysisLearningwithResnet_version_from_github.ipynb)
 
