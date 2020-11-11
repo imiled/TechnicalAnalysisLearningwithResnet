@@ -58,7 +58,7 @@ From the future price evolution, we calculate a future state which can be splitt
 The objective is to get a list of images represnting the graph of the index during the past day for eache date where the class of the image would be the evolution of the index in the next future days:
 
 
-![alt text](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/blob/main/docs/images%20TFM%201PNG.PNG)
+![alt text](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/tree/main/docs/images TFM 1PNG.png)
 
 
 Please note that: 
