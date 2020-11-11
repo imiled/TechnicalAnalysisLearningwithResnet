@@ -43,12 +43,23 @@ $ pip install -r gpu_requirements.txt
 Now for each step can be taken independently as we are saving loading datas and model at each time.
 
 ## Setup : Generate Dataset 
+
+In this part we are generating the training and testing dataset and organise the directory
+
 ```
-python3 lib/setup.py
+python3 lib/setup.py indexcodefromyahoo startyear endyear nbofblockforramoptim nbdayforpast nbofdayforfuture pathtoputtheimages
 ```
 
-In this part we are generating the training and testing dataset.
-First we download the historical prices of the sp500 from 1927 to 31 July 2020 and built the image of 15 days historical graph also we get the 5 days future price evolution of the sp500. 
+example
+
+```
+python3 lib/setup.py ^SPX 1927 2020 10 250 20 /content/TechnicalAnalysisLearningwithResnet/images/ 
+```
+
+indexcodefromyahoo can be for S&P 500 : ^SPX for ESTX 50 PR.EUR : ^STOXX50E and for FTSE 100 : ^FTSE
+nbofblockforramoptim is a paremeter to optimize ram use as it cannot load all the images in the same app
+
+First we download the historical prices of the sp500 from 1927 to 31 July 2020 and built the image of 250 days historical graph also we get the 20 days future price evolution of the sp500. 
 From the future price evolution, we calculate a future state which can be splitted in 5 classes : ( an addtional ER ie error class is cleaned therafter)
 
 **Sell-Sell | Sell- Neutral | Neutral | Neutral -Buy | Buy -Buy **
@@ -58,7 +69,7 @@ From the future price evolution, we calculate a future state which can be splitt
 The objective is to get a list of images represnting the graph of the index during the past day for eache date where the class of the image would be the evolution of the index in the next future days:
 
 
-![alt text](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/blob/main/docs/images%20TFM%201PNG.png)
+![alt text](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/blob/main/docs/images%20dataset.PNG)
 
 
 Please note that: 
