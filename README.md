@@ -19,7 +19,7 @@ TechAnalysisLearningwithResnet.ipynb [![Open In Colab](https://colab.research.go
 
 I recommend at start to use a virtual python envirenment using this specific command :
 ```
-$ bash init.sh
+$ bash lib/init.sh
 ```
 
 and using this Docker command to get the appropiate environment base:
@@ -58,7 +58,7 @@ From the future price evolution, we calculate a future state which can be splitt
 The objective is to get a list of images represnting the graph of the index during the past day for eache date where the class of the image would be the evolution of the index in the next future days:
 
 
-![alt text](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/blob/main/images%20TFM%201PNG.PNG)
+![alt text](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/blob/main/docs/images%20TFM%201PNG.PNG)
 
 
 Please note that: 
