@@ -95,15 +95,25 @@ def main():
   simplemodel.compile(loss=sp500loss, optimizer=sp500optimizer, metrics=sp500metrics)
   
   # Saving themodel
-  transfer_model1.save(input_path+'TL_resnet_init.h5')
-  transfer_model2.save(input_path+'TL_vgg_init.h5')
-  simplemodel.save(input_path+'simplemodel_init.h5')
+  transfer_model1_name='TL_resnet_'+input_model_name
+  transfer_model2_name='TL_vgg_'+input_model_name
+  simplemodel_name='simplemodel_'+input_model_name
+
+  transfer_model1.save(input_path+transfer_model1_name+'.h5')
+  transfer_model2.save(input_path+transfer_model2_name+'.h5')
+  simplemodel.save(input_path+simplemodel_name+'.h5')
 
   #Display the graph of the model
   tf.keras.utils.plot_model(transfer_model1)
 
   ##Display summary of neural network
+  #transfer_model1.summary()
+  print("creation of the resnet based model in : "+ input_path+transfer_model1_name+'.h5')
   transfer_model1.summary()
+  print("creation of the vgg based model in : "+input_path+transfer_model2_name+'.h5')
+  transfer_model2.summary()
+  print("creation of a personalised based model in : "+input_path+simplemodel_name+'.h5')
+  simplemodel.summary()
     
 if __name__ == "__main__":
   main()

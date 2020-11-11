@@ -31,47 +31,6 @@ def select_optimiser(opt_name='adam',LR=0.01):
     corrected_name=input("check the optimiser name between: adam sgd rmsprop adadelta adagrad adamax nadam ftrl")
     return select_optimiser(opt_name=corrected_name,LR=0.01) 
   
-def train_with_dataset(m_x_train=1 ,m_y_train=1,    \
-    input_model_path='/content/TechnicalAnalysisLearningwithResnet/model/', \
-    input_model_name="modelin", \
-    ouput_model_name="modelout",\
-    input_loss='categorical_crossentropy',\
-    input_optimizer_name='Adam',\
-    input_metrics_name='accuracy',\
-    input_nb_class = 5,\
-    input_batch_size = 32,\
-    input_epochs = 20,\
-    input_learning_rate = 0.01):
- 
-  optimizer=input_optimizer_name
-  input_metrics=[input_metrics_name]
-  #print(input_model_path+"best_model"+"_Batch"+str(input_batch_size)+"_LR"+str(input_learning_rate)+".hdf5")
-  transfer_model_in_learning=load_model(input_model_path+input_model_name)
-  ##Saving the best model for each parameters
-  checkpoint = ModelCheckpoint(input_model_path+"best_model_"+input_optimizer_name+"_Batch"+str(input_batch_size)+"_LR"+str(input_learning_rate)+".hdf5", \
-                                  monitor='loss', verbose=1, \
-                                  save_best_only=True, mode='auto', period=1)
-  # Define the Keras TensorBoard callback.
-  logdir=input_model_path+"../logs/fit/" + datetime.now().strftime("%Y%m%d-%H%M%S")
-  tensorboard_callback = TensorBoard(log_dir=logdir, histogram_freq=1)
-
-  #Save initial weight to reinitialize it after when we trying to find the best set of parameters
-  #transfer_model.save_weights('model/initial_weights.h5')
-  #model.load_weights('my_model_weights.h5')
-  
-  ###compilation model
-  transfer_model_in_learning.compile(loss=input_loss, optimizer=optimizer, metrics=input_metrics)
-  
-  history = transfer_model_in_learning.fit(m_x_train, m_y_train, \
-                                batch_size=input_batch_size, epochs=input_epochs, \
-                                validation_split=0.2, verbose=1, shuffle=True \
-                                ,callbacks=[checkpoint, tensorboard_callback])
-
-  # Saving themodel
-  transfer_model_in_learning.save(input_model_path+ouput_model_name+'.h5')
-
-  return history
-
 def main():
   param=sys.argv[1:]
   if len(param)==0:
@@ -113,24 +72,9 @@ def main():
   transfer_model_in_learning=load_model(input_model_path+input_model_name)
   
   #Param adjust 
-  dataset=tf.keras.preprocessing.image_dataset_from_directory(
-      directory=input_dataset_path,
-      labels="inferred",
-      label_mode="categorical",
-      class_names=None,
-      color_mode="grayscale",
-      batch_size=input_batch_size,
-      image_size=(255, 255),
-      shuffle=True,
-      seed=None,
-      validation_split=None,
-      subset=None,
-      interpolation="bilinear",
-      follow_links=False,
-  )
 
   train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-    directory='/content/TechnicalAnalysisLearningwithResnet/images',
+    directory=input_dataset_path,
     color_mode='grayscale',
     validation_split=0.2,
     subset="training",
@@ -139,7 +83,7 @@ def main():
     batch_size=batch_size)
   
   val_ds = tf.keras.preprocessing.image_dataset_from_directory(
-    directory='/content/TechnicalAnalysisLearningwithResnet/images',
+    directory=input_dataset_path,
     color_mode='grayscale',
     validation_split=0.2,
     subset="validation",
@@ -150,25 +94,13 @@ def main():
   class_names = train_ds.class_names
   print(class_names)
   
-  ##Saving the best model for each parameters
-
-  checkpoint = ModelCheckpoint(input_model_path+"best_model"+"_Batch"+str(input_batch_size)+"_LR"+str(input_learning_rate)+".hdf5", \
-                                  monitor='loss', verbose=1, \
-                                  save_best_only=True, mode='auto')
-  # Define the Keras TensorBoard callback.
-  logdir=input_model_path+"../logs/fit/" + datetime.now().strftime("%Y%m%d-%H%M%S")
-  tensorboard_callback = TensorBoard(log_dir=logdir, histogram_freq=1)
 
   transfer_model_in_learning=tf.keras.models.load_model(input_model_path+input_model_name)
 
-  #Save initial weight to reinitialize it after when we trying to find the best set of parameters
-  #transfer_model.save_weights('model/initial_weights.h5')
-  #model.load_weights('my_model_weights.h5')
-  
   ###compilation model
   transfer_model_in_learning.compile(loss=input_loss, optimizer=optimizer, metrics=input_metrics)
   
-  history = transfer_model_in_learning.fit(train_ds,  validation_data=val_ds, callbacks=[checkpoint, tensorboard_callback])
+  history = transfer_model_in_learning.fit(train_ds,  validation_data=val_ds)
 
   # Saving themodel
   transfer_model_in_learning.save(input_model_path+ouput_model_name+'.h5')
