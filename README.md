@@ -19,7 +19,7 @@ TechAnalysisLearningwithResnet.ipynb [![Open In Colab](https://colab.research.go
 
 I recommend at start to use a virtual python envirenment using this specific command :
 ```
-$ bash lib/init.sh
+$ ./lib/init.sh
 ```
 
 and using this Docker command to get the appropiate environment base:
@@ -80,7 +80,7 @@ You can use the commands from *organisedataset.sh* to arrange the full images cr
 
 
 ```
-$ bash lib/organisedataset.sh
+$ ./lib/organisedataset.sh
 ```
 
 
