@@ -95,6 +95,9 @@ python3 /TechnicalAnalysisLearningwithResnet/lib/createmodel.py /TechnicalAnalys
 
 return 3 models based on resnet, vgg and a personalized one
 
+example for resnet model
+
+![example for resnet model](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/blob/main/docs/resnetmodel.png)
 ## Train the model based on the dataset for training
 ```
 python3 lib/train.py folderpathwithcategorizedfolderimages pathformodel nameofmodelinput nameoftrainedmodeloutput loss optimizer metric nbofclasses batchsize nbofepochs learningrate
