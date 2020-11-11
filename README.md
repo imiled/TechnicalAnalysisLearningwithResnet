@@ -144,5 +144,7 @@ python3 lib/run.py /content/TechnicalAnalysisLearningwithResnet/images/imagestra
 ```
 
 Take an image of an historical graph from a market webpage like investing.com, crop the image to only fit the graph and save it to a folder for example with name image1.PNG or give the full path of the image when asked.
-This execution tell us which market state in the future is the best representative in the file found in the resultpath with name result_run_on_images%Y%m%d-%H%M%S.csv
+This execution tell us which market state in the future is the best representative in the file found in the resultpath with name
+
+result_run_on_images%Y%m%d-%H%M%S.csv
 
