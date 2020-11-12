@@ -26,14 +26,13 @@ shuf -n 40 -e * | xargs -i mv {} ../../imagestest/SS
 cd $vpath
 cd images/
 
-ls tmp/BB | wc -l > nbimagepblock.txt
-ls tmp/NB | wc -l > nbimagepblock.txt
-ls tmp/NN | wc -l > nbimagepblock.txt
-ls tmp/SN | wc -l > nbimagepblock.txt
-ls tmp/SS | wc -l > nbimagepblock.txt
+ls tmp/BB | wc -l >> nbimagepblock.txt
+ls tmp/NB | wc -l >> nbimagepblock.txt
+ls tmp/NN | wc -l >> nbimagepblock.txt
+ls tmp/SN | wc -l >> nbimagepblock.txt
+ls tmp/SS | wc -l >> nbimagepblock.txt
 
 var=$(datamash min 1 < nbimagepblock.txt)
-rm  nbimagepblock.txt 
 
 cd tmp/BB/
 shuf -n $var -e * | xargs -i mv {} ../../imagestrain/BB
@@ -47,5 +46,5 @@ cd ../SS/
 shuf -n $var -e * | xargs -i mv {} ../../imagestrain/SS
 
 cd $vpath
-ls -a /images/imagestrain
-ls -a /images/imagestest
+ls -a images/imagestrain
+ls -a images/imagestest
