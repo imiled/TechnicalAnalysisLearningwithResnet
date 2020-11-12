@@ -133,6 +133,9 @@ python3 lib/test.py /content/TechnicalAnalysisLearningwithResnet/images/imageste
 This part will evaluate the model with the testing dataset that we generated in first step.
 We show the accuracy, the confusion matrix and the classification report in the folder pathfortheresulttobesaved 
 
+![alt text](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/blob/main/docs/resulttest.PNG)
+
+
 ## Run : Guess future market state from random image
 ```
 python3 lib/run.py pathforimagetopredit pathofthemodel pathfortheresults
