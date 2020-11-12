@@ -117,6 +117,9 @@ This part will train the NN and save the trained model in the correct path. but 
 
 You can refer to the colab notebook so as to find the different setup tested to get to our accepable trained model through SGD on resnet.
 
+![alt text](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/blob/main/docs/accuracy.png)
+
+
 ## Test : generating the confusion matrix on dataset spared for testing
 ```
 python3 lib/test.py pathforimagetotest fullpathofthemodel pathfortheresulttobesaved
@@ -154,3 +157,4 @@ This execution tell us which market state in the future is the best representati
 
 result_run_on_images%Y%m%d-%H%M%S.csv
 
+![alt text](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/blob/main/docs/runresult.png)
