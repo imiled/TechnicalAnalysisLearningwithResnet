@@ -66,7 +66,7 @@ From the future price evolution, we calculate a future state which can be splitt
 
 **SS | SN | NN | NB | BB **
 
-The objective is to get a list of images represnting the graph of the index during the past day for eache date where the class of the image would be the evolution of the index in the next future days:
+The objective is to get a list of images represnting the graph of the index during the past day for each date where the class of the image would be the evolution of the index in the next future days:
 
 
 ![alt text](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/blob/main/docs/images%20dataset.PNG)
