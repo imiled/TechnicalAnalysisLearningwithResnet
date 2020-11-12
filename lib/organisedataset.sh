@@ -23,7 +23,7 @@ cd ../SS
 shuf -n 40 -e * | xargs -i mv {} ../../imagestest/SS
 
 
-cd vpath
+cd $vpath
 cd images/
 
 ls tmp/BB | wc -l > nbimagepblock.txt
@@ -46,6 +46,6 @@ shuf -n $var -e * | xargs -i mv {} ../../imagestrain/SN
 cd ../SS/
 shuf -n $var -e * | xargs -i mv {} ../../imagestrain/SS
 
-cd vpath
+cd $vpath
 ls -a /images/imagestrain
 ls -a /images/imagestest
