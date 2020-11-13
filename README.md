@@ -66,7 +66,9 @@ From the future price evolution, we calculate a future state which can be splitt
 
 **SS | SN | NN | NB | BB **
 
-The objective is to get a list of images represnting the graph of the index during the past day for each date where the class of the image would be the evolution of the index in the next future days:
+![alt text](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/blob/main/docs/explication201113.PNG)
+
+The objective is to get a list of images representing the graph of the index during the past day for each date where the class of the image would be the evolution of the index in the next future days:
 
 
 ![alt text](https://github.com/imiled/TechnicalAnalysisLearningwithResnet/blob/main/docs/images%20dataset.PNG)
@@ -74,7 +76,7 @@ The objective is to get a list of images represnting the graph of the index duri
 
 Please note that: 
 1. I use cv2 and matplot lib to create the image in 255 x 255 x 1 for grayscale
-2. I optimsed the creation of the dataset using drive memory and not ram ( that would take all ram available and crash the system).
+2. I optimised the creation of the dataset using drive memory and not ram ( that would take all ram available and crash the system).
 
 You can use the commands from *organisedataset.sh* to arrange the full images created in 2 dataset (training and testing) and for each class I randomly put the same number of images. Depending on the total number of images (min of class created) . For testing I have chosen 40 images per block so 200 images in total.
 
